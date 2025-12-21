@@ -1,0 +1,148 @@
+---
+title: "Welcome to My Digital Garden"
+date: "2024-12-20"
+description: "An introduction to this editorial-style archive and what you can expect to find here."
+tags: ["Introduction", "Meta", "Coding"]
+---
+
+Welcome to my **Digital Garden** — a carefully curated space where I document my journey through Computer Science, Artificial Intelligence, and Software Engineering. This isn't just another blog; it's an archive designed with intention, prioritizing readability and aesthetic harmony.
+
+## Why a Digital Garden?
+
+The concept of a "digital garden" resonates with how I approach learning: *organic, iterative, and ever-evolving*. Unlike traditional blogs that follow a chronological timeline, a digital garden allows ideas to grow and interconnect naturally.
+
+Here's what makes this space special:
+
+- **Editorial Design**: Inspired by high-quality print magazines
+- **Warm Aesthetics**: No harsh whites or pure blacks, just comfortable reading
+- **Code-Focused**: Beautiful syntax highlighting for technical content
+- **Minimalist UI**: Clean interactions that don't distract from the content
+
+## Technical Implementation
+
+This Digital Garden is built with modern web technologies, focusing on performance and developer experience:
+
+```typescript
+// Example: Type-safe blog post metadata
+interface Post {
+  slug: string;
+  title: string;
+  date: string;
+  description: string;
+  tags: string[];
+  content: string;
+}
+
+export function getAllPosts(): Post[] {
+  const fileNames = fs.readdirSync(postsDirectory);
+  const posts = fileNames
+    .filter((fileName) => fileName.endsWith(".mdx"))
+    .map((fileName) => {
+      const slug = fileName.replace(/\.mdx$/, "");
+      const fullPath = path.join(postsDirectory, fileName);
+      const { data, content } = matter(fileContents);
+
+      return { slug, ...data, content } as Post;
+    });
+
+  return posts.sort((a, b) => (a.date > b.date ? -1 : 1));
+}
+```
+
+The architecture follows Next.js 14's App Router patterns, leveraging:
+
+1. **MDX** for rich content authoring
+2. **Tailwind CSS** for utility-first styling
+3. **Framer Motion** for subtle animations
+4. **Rehype Pretty Code** for beautiful syntax highlighting
+
+### Styling Philosophy
+
+One of the key decisions was choosing a **warm color palette** instead of the typical stark white backgrounds. This creates a more comfortable reading experience, especially during long sessions:
+
+```css
+:root {
+  /* Warm paper tones instead of pure white */
+  --background: #FAF8F5;
+  --foreground: #2D2D2D;
+
+  /* Accent color inspired by editorial design */
+  --accent: #8B7355;
+
+  /* Soft borders for visual hierarchy */
+  --border: #E0DDD8;
+}
+```
+
+## What to Expect
+
+This garden will grow with notes on:
+
+- **Computer Science Fundamentals**: Data structures, algorithms, system design
+- **Artificial Intelligence**: Machine learning, deep learning, transformers
+- **Software Engineering**: Best practices, architecture patterns, tooling
+- **Web Development**: Modern frameworks, performance optimization, UX
+
+Each post is written with clarity in mind, using:
+
+> "The best writing is rewriting." — E.B. White
+
+I believe technical content can be both informative and pleasant to read. That's the standard I'm setting for this space.
+
+## Code Examples
+
+Here's a simple React component demonstrating the type of content you'll find:
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+
+export function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div className="flex items-center gap-4">
+      <Button onClick={() => setCount(count - 1)}>
+        Decrement
+      </Button>
+      <span className="font-mono text-lg">{count}</span>
+      <Button onClick={() => setCount(count + 1)}>
+        Increment
+      </Button>
+    </div>
+  );
+}
+```
+
+And a Python example for good measure:
+
+```python
+def fibonacci(n: int) -> list[int]:
+    """Generate Fibonacci sequence up to n terms."""
+    if n <= 0:
+        return []
+    elif n == 1:
+        return [0]
+
+    fib = [0, 1]
+    for i in range(2, n):
+        fib.append(fib[i-1] + fib[i-2])
+
+    return fib
+
+# Generate first 10 Fibonacci numbers
+result = fibonacci(10)
+print(result)  # [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+```
+
+## Final Thoughts
+
+I'm excited to cultivate this digital garden and share what I learn along the way. If you're reading this, welcome! I hope you find something valuable here.
+
+The journey of learning never ends, and this space is my way of documenting it with care and intention.
+
+---
+
+*Built with Next.js, Tailwind CSS, and care.*

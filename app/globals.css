@@ -1,26 +1,421 @@
 @import "tailwindcss";
 
+/* Editorial Design System - Dual Theme Support */
+
+/* Light Mode (Default) - Warm Paper Aesthetic */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Base Colors - Warm Off-White Paper Tones */
+  --background: #FAF8F5;
+  --foreground: #2D2D2D;
+
+  /* Surface & Card Colors */
+  --card: #FFFFFF;
+  --card-foreground: #2D2D2D;
+
+  /* Muted tones for subtle elements */
+  --muted: #E8E5E0;
+  --muted-foreground: #6B6B6B;
+
+  /* Accent - Warm Editorial Brown */
+  --accent: #8B7355;
+  --accent-foreground: #FAF8F5;
+
+  /* Border - Subtle warm grey */
+  --border: #E0DDD8;
+
+  /* Code block background - Warm grey */
+  --code-bg: #F5F3F0;
+
+  /* Firefly particles - warm golden glow */
+  --firefly-color: rgba(255, 200, 87, 0.3);
+  --firefly-glow: rgba(255, 200, 87, 0.15);
+}
+
+/* Dark Mode - Atmospheric & Mysterious */
+.dark {
+  /* Base Colors - Deep warm tones */
+  --background: #1A1816;
+  --foreground: #E8E5E0;
+
+  /* Surface & Card Colors */
+  --card: #252220;
+  --card-foreground: #E8E5E0;
+
+  /* Muted tones */
+  --muted: #2D2A28;
+  --muted-foreground: #9B9591;
+
+  /* Accent - Warm amber/gold for dark mode */
+  --accent: #D4A574;
+  --accent-foreground: #1A1816;
+
+  /* Border - Subtle */
+  --border: #3A3633;
+
+  /* Code block background */
+  --code-bg: #252220;
+
+  /* Firefly particles - brighter in dark mode */
+  --firefly-color: rgba(255, 215, 110, 0.4);
+  --firefly-glow: rgba(255, 215, 110, 0.2);
 }
 
 @theme inline {
+  /* Colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-code-bg: var(--code-bg);
+
+  /* Typography */
+  --font-serif: var(--font-playfair);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Spacing for editorial layout */
+  --max-width-prose: 65ch;
+
+  /* Shadows - Soft and diffused */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+  --shadow-md: 0 4px 12px 0 rgb(0 0 0 / 0.06);
+  --shadow-lg: 0 10px 24px 0 rgb(0 0 0 / 0.08);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  font-feature-settings: "kern" 1, "liga" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Base Typography Styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+/* Prose container for article content */
+.prose {
+  max-width: var(--max-width-prose);
+  color: var(--foreground);
+}
+
+/* Code blocks with warm styling */
+code {
+  background: var(--code-bg);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: var(--font-geist-mono), monospace;
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* Tailwind Typography Customization - Editorial Style */
+.prose {
+  /* Warm editorial colors */
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-lead: var(--muted-foreground);
+  --tw-prose-links: var(--accent);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-counters: var(--muted-foreground);
+  --tw-prose-bullets: var(--muted-foreground);
+  --tw-prose-hr: var(--border);
+  --tw-prose-quotes: var(--foreground);
+  --tw-prose-quote-borders: var(--accent);
+  --tw-prose-captions: var(--muted-foreground);
+  --tw-prose-code: var(--foreground);
+  --tw-prose-pre-code: var(--foreground);
+  --tw-prose-pre-bg: var(--code-bg);
+  --tw-prose-th-borders: var(--border);
+  --tw-prose-td-borders: var(--border);
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.prose p {
+  line-height: 1.8;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+.prose a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.prose a:hover {
+  border-bottom-color: var(--accent);
+}
+
+.prose strong {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.prose blockquote {
+  font-style: italic;
+  border-left: 3px solid var(--accent);
+  padding-left: 1.5rem;
+  color: var(--muted-foreground);
+}
+
+/* Inline code (not in pre blocks) */
+.prose :not(pre) > code {
+  background: var(--code-bg);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--accent);
+  border: 1px solid var(--border);
+}
+
+/* Code blocks - let rehype-pretty-code handle background */
+.prose pre {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  overflow-x: auto;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  background: transparent !important; /* Override to use theme background */
+}
+
+/* Code inside pre blocks - preserve syntax highlighting */
+.prose pre code {
+  background: transparent !important;
+  padding: 0;
+  border-radius: 0;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: inherit; /* Don't override syntax highlighting colors */
+  border: none;
+}
+
+/* Preserve inline styles from rehype-pretty-code */
+.prose pre code span {
+  color: inherit; /* Keep syntax highlighting colors */
+}
+
+/* Table styling */
+.prose table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.prose th {
+  background: var(--muted);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid var(--border);
+}
+
+.prose td {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+}
+
+/* List styling */
+.prose ul,
+.prose ol {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+.prose li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+/* Code Block Enhancements - Position for copy button */
+.prose pre {
+  position: relative;
+}
+
+/* Code block wrapper for hover effects */
+.prose div[data-rehype-pretty-code-fragment] {
+  position: relative;
+}
+
+.prose div[data-rehype-pretty-code-fragment] pre {
+  padding-top: 2.5rem;
+}
+
+/* Language badge */
+.prose div[data-rehype-pretty-code-fragment]::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 0.75rem;
+  left: 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 1;
+}
+
+/* Highlighted line styles */
+.prose code .line--highlighted {
+  background-color: rgba(139, 115, 85, 0.1);
+  border-left: 3px solid var(--accent);
+  padding-left: 0.75rem;
+  margin-left: -1rem;
+  display: block;
+}
+
+/* Highlighted word/chars */
+.prose code .word--highlighted {
+  background-color: rgba(139, 115, 85, 0.2);
+  border-radius: 3px;
+  padding: 0.1em 0.3em;
+}
+
+/* Line numbers (if enabled) */
+.prose code[data-line-numbers] {
+  counter-reset: line;
+}
+
+.prose code[data-line-numbers] > .line::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 1.5rem;
+  margin-right: 1.5rem;
+  text-align: right;
+  color: var(--muted-foreground);
+  opacity: 0.5;
+}
+
+/* Ensure code blocks are scrollable on mobile */
+@media (max-width: 640px) {
+  .prose pre {
+    padding: 1rem;
+  }
+
+  .prose div[data-rehype-pretty-code-fragment] pre {
+    padding-top: 2rem;
+  }
+}
+
+/* Syntax Highlighting - Ensure colors are applied */
+.prose pre[data-theme] {
+  /* Let the theme handle background and colors */
+  background-color: var(--shiki-light-bg, var(--code-bg)) !important;
+}
+
+.dark .prose pre[data-theme] {
+  background-color: var(--shiki-dark-bg, var(--code-bg)) !important;
+}
+
+/* Ensure token colors are visible */
+.prose code[data-theme] span {
+  color: var(--shiki-light, inherit);
+}
+
+.dark .prose code[data-theme] span {
+  color: var(--shiki-dark, inherit);
+}
+
+/* ============================================
+   ATMOSPHERIC EFFECTS
+   ============================================ */
+
+/* Subtle texture overlay for paper effect */
+.paper-texture {
+  position: relative;
+  background-color: var(--background);
+}
+
+.paper-texture::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.01) 2px,
+      rgba(0, 0, 0, 0.01) 4px
+    );
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.dark .paper-texture::before {
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.01) 2px,
+      rgba(255, 255, 255, 0.01) 4px
+    );
+  opacity: 0.15;
+}
+
+/* ============================================
+   SMOOTH THEME TRANSITIONS (Eye Comfort)
+   ============================================ */
+
+/* Apply smooth color transitions to all elements */
+@layer base {
+  * {
+    /* Only transition color properties - no layout properties for performance */
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, box-shadow;
+    /* Smooth, natural easing curve */
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); /* ease-in-out */
+    /* Slower duration for a calming, soft feel */
+    transition-duration: 700ms;
+  }
+
+  /* Ensure body transitions smoothly */
+  body {
+    transition-property: color, background-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 700ms;
+  }
+}
+
+/* Prevent jarring transition flash on initial page load */
+.preload * {
+  transition: none !important;
+}
+
+/* Special handling for interactive elements - slightly faster for better UX */
+button,
+a,
+input,
+textarea,
+select {
+  transition-duration: 300ms !important;
 }
