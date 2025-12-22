@@ -17,21 +17,52 @@ interface Firefly {
 export function FireflyBackground() {
   const [count] = useState(31);
   const [initialized, setInitialized] = useState(false);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const firefliesRef = useRef<Firefly[]>([]);
   const mousePos = useRef({ x: -1000, y: -1000 });
   const containerRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number>();
 
-  // Initialize fireflies data only after dimensions are available
+  // Track full document dimensions (viewport width x full scrollable height)
   useEffect(() => {
-    // Guard: ensure window dimensions are valid
     if (typeof window === 'undefined') return;
 
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    const updateDimensions = () => {
+      const width = window.innerWidth;
+      const height = Math.max(
+        document.documentElement.scrollHeight,
+        document.documentElement.clientHeight,
+        document.body.scrollHeight,
+        document.body.clientHeight
+      );
 
-    // Don't initialize if dimensions are invalid
-    if (width === 0 || height === 0) return;
+      // Strict guard: only update if dimensions are valid
+      if (width > 0 && height > 0) {
+        setDimensions({ width, height });
+      }
+    };
+
+    // Initial measurement
+    updateDimensions();
+
+    // Update on window resize
+    window.addEventListener('resize', updateDimensions);
+
+    // Also check after a short delay (content might still be loading)
+    const timeoutId = setTimeout(updateDimensions, 100);
+
+    return () => {
+      window.removeEventListener('resize', updateDimensions);
+      clearTimeout(timeoutId);
+    };
+  }, []);
+
+  // Initialize fireflies data only after valid dimensions are available
+  useEffect(() => {
+    const { width, height } = dimensions;
+
+    // Strict guard: don't initialize if dimensions are invalid
+    if (width <= 0 || height <= 0) return;
 
     firefliesRef.current = Array.from({ length: count }, (_, i) => ({
       id: i,
@@ -46,7 +77,7 @@ export function FireflyBackground() {
     }));
 
     setInitialized(true);
-  }, [count]);
+  }, [count, dimensions]);
 
   // Track mouse position
   useEffect(() => {
@@ -60,9 +91,16 @@ export function FireflyBackground() {
 
   // Physics-based animation loop
   useEffect(() => {
+    if (!initialized) return;
+
     const animate = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
+      const { width, height } = dimensions;
+
+      // Skip if dimensions aren't valid
+      if (width <= 0 || height <= 0) {
+        animationFrameRef.current = requestAnimationFrame(animate);
+        return;
+      }
 
       firefliesRef.current.forEach((firefly) => {
         let { x, y, vx, vy, opacity, targetOpacity, element } = firefly;
@@ -73,11 +111,11 @@ export function FireflyBackground() {
         const dx = x - mousePos.current.x;
         const dy = y - mousePos.current.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        const interactionRadius = 60; // Reduced by 50% (was 120)
+        const interactionRadius = 60; // Gentle radius
 
         if (distance < interactionRadius && distance > 0) {
-          // Apply repulsion force to velocity (reduced by 50%)
-          const force = (1 - distance / interactionRadius) * 0.4; // Was 0.8
+          // Apply gentle repulsion force to velocity
+          const force = (1 - distance / interactionRadius) * 0.4;
           const angle = Math.atan2(dy, dx);
           vx += Math.cos(angle) * force;
           vy += Math.sin(angle) * force;
@@ -103,7 +141,7 @@ export function FireflyBackground() {
         x += vx;
         y += vy;
 
-        // Boundary wrapping (fireflies wrap around screen edges)
+        // Boundary wrapping - wrap around full document dimensions
         if (x < -20) x = width + 20;
         if (x > width + 20) x = -20;
         if (y < -20) y = height + 20;
@@ -142,7 +180,7 @@ export function FireflyBackground() {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, []);
+  }, [initialized, dimensions]);
 
   // Callback to store element refs
   const setFireflyRef = (index: number) => (element: HTMLDivElement | null) => {
@@ -152,11 +190,11 @@ export function FireflyBackground() {
   };
 
   // Don't render fireflies until properly initialized
-  if (!initialized) {
+  if (!initialized || dimensions.height === 0) {
     return (
       <div
         ref={containerRef}
-        className="fixed inset-0 pointer-events-none overflow-hidden z-0"
+        className="absolute inset-0 pointer-events-none overflow-hidden z-0"
         aria-hidden="true"
       />
     );
@@ -165,7 +203,10 @@ export function FireflyBackground() {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 pointer-events-none overflow-hidden z-0"
+      className="absolute top-0 left-0 w-full pointer-events-none overflow-hidden z-0"
+      style={{
+        height: `${dimensions.height}px`,
+      }}
       aria-hidden="true"
     >
       {firefliesRef.current.map((firefly, i) => (

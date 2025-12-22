@@ -565,6 +565,83 @@ if (!initialized) return <div />;
 
 ---
 
+### [x] Phase 19: Full-Page Firefly Background (Absolute Positioning)
+**Goal:** Expand firefly canvas to cover entire scrollable page height, not just viewport.
+
+**User Requirement:**
+- Fireflies should be distributed across the entire page content height
+- Create sense of depth where background spans full scrollable area
+- Maintain gentle physics and prevent (0,0) clumping
+
+**Problem with Previous Implementation:**
+- Used `fixed` positioning with `inset-0` (viewport only)
+- Fireflies only visible in viewport height
+- Didn't cover content below fold on long pages
+
+**Solution:**
+1. **Changed Positioning: Fixed → Absolute**
+   - Container now uses `absolute` instead of `fixed`
+   - Positioned at `top: 0, left: 0`
+   - Width: 100% of viewport
+   - Height: Full document scrollHeight
+
+2. **Dynamic Document Height Tracking:**
+   ```typescript
+   const height = Math.max(
+     document.documentElement.scrollHeight,
+     document.documentElement.clientHeight,
+     document.body.scrollHeight,
+     document.body.clientHeight
+   );
+   ```
+   - Measures full scrollable page height
+   - Updates on window resize
+   - Delayed check (100ms) for content loading
+
+3. **Dimensions State Management:**
+   - New `dimensions` state: `{ width, height }`
+   - Strict validation: `width > 0 && height > 0`
+   - Fireflies initialize only after valid dimensions
+   - Animation loop uses dimensions for boundary checking
+
+4. **Boundary Wrapping:**
+   - X-axis: wraps at viewport width
+   - Y-axis: wraps at full document height
+   - Fireflies can exist anywhere in scrollable area
+
+5. **Initialization Guards:**
+   - Multiple layers of validation
+   - Won't render if `!initialized` or `height === 0`
+   - Prevents (0,0) clumping on any load scenario
+
+**Technical Implementation:**
+```typescript
+// Container with absolute positioning
+<div
+  className="absolute top-0 left-0 w-full"
+  style={{ height: `${dimensions.height}px` }}
+>
+  {/* Fireflies distributed across full height */}
+</div>
+
+// Boundary wrapping uses full document dimensions
+if (y > height + 20) y = -20; // height = full page height
+```
+
+**User Experience:**
+- Fireflies visible across entire page when scrolling
+- Creates atmospheric depth effect throughout content
+- No "empty" feeling when scrolling down long pages
+- Gentle, subtle interactions (60px radius, 0.4 force)
+- Clean initialization without (0,0) clustering
+
+**Files Modified:**
+- `components/firefly-background.tsx` (absolute positioning, document height tracking, dimensions state)
+
+**Status:** ✅ Complete - Full-page firefly background with absolute positioning
+
+---
+
 ## Pending Phases
 (Add future phases here as they are planned)
 
