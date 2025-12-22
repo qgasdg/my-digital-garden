@@ -146,6 +146,53 @@ A modern editorial-style digital archive blog built with Next.js 16, featuring w
 
 ---
 
+### [x] Phase 10: Post Thumbnail Support
+**Goal:** Add thumbnail image support to blog posts for better visual appeal on the main page.
+
+**Implementation:**
+1. **Type System Updates:**
+   - Added `thumbnail?: string` field to `Post` and `PostMetadata` interfaces
+   - Updated all MDX parsing functions to read thumbnail from frontmatter
+
+2. **Main Page UI:**
+   - Implemented Next.js `Image` component for optimized thumbnail display
+   - Added hover effect: image scales slightly on hover (scale-105)
+   - Created elegant placeholder design for posts without thumbnails
+
+3. **Placeholder Design (No Thumbnail):**
+   - Warm gradient background using accent colors
+   - Decorative circular pattern (3 overlapping circles, very subtle opacity)
+   - Document icon representing editorial content
+   - Displays first tag of the post for context
+
+4. **Image Management:**
+   - Created `public/images/` directory for thumbnail storage
+   - Added thumbnail paths to existing blog posts' frontmatter
+
+**Usage:**
+```mdx
+---
+title: "Post Title"
+date: "2024-12-20"
+description: "Description"
+tags: ["Tag1", "Tag2"]
+thumbnail: "/images/your-image.jpg"
+---
+```
+
+**Files Modified:**
+- `lib/mdx.ts` (added thumbnail field to interfaces and parsing logic)
+- `app/page.tsx` (thumbnail display with Image component + placeholder)
+- `posts/hello-world.mdx` (added thumbnail field)
+- `posts/understanding-transformers.mdx` (added thumbnail field)
+
+**Files Created:**
+- `public/images/` (directory for storing thumbnail images)
+
+**Status:** ✅ Complete - Beautiful thumbnails with graceful fallback
+
+---
+
 ## Pending Phases
 (Add future phases here as they are planned)
 
@@ -220,6 +267,32 @@ npm run lint    # Run ESLint
 - Use serif fonts for headings, sans for body
 - Optimize for both dark and light modes
 - Test on mobile (responsive design critical)
+
+---
+
+## Workflow Protocol (STRICT)
+
+1.  **One Phase, One Commit:** Never combine multiple phases into a single commit.
+2.  **The Loop:**
+    -   Step 1: Implement the requested Phase.
+    -   Step 2: Verify the feature works.
+    -   Step 3: Update `CLAUDE.md` (mark the phase as `[x]` and add details).
+    -   Step 4: **STOP** and propose a git commit immediately using the convention below.
+3.  **Approval:** Wait for user confirmation before starting the next Phase.
+
+---
+
+## Git Commit Convention
+
+Follow the **Conventional Commits** pattern: `type: subject`
+
+- **feat:** New feature or major component (e.g., `feat: Add About page`, `feat: Implement dark mode`)
+- **fix:** Bug fix (e.g., `fix: Resolve hydration mismatch`, `fix: Prevent ENOENT error`)
+- **style:** CSS/Design changes that don't affect logic (e.g., `style: Adjust firefly opacity`, `style: Update font family`)
+- **refactor:** Code restructuring without behavior change (e.g., `refactor: Clean up mdx.ts`)
+- **content:** Content updates (e.g., `content: Add new blog post`, `content: Fix typo in About me`)
+- **chore:** Config, build, or tool changes (e.g., `chore: Update tailwind config`, `chore: Add lucide-react`)
+- **docs:** Documentation updates (e.g., `docs: Update README`, `docs: Update CLAUDE.md`)
 
 ---
 

@@ -10,6 +10,7 @@ export interface Post {
   date: string;
   description: string;
   tags: string[];
+  thumbnail?: string;
   content: string;
 }
 
@@ -19,6 +20,7 @@ export interface PostMetadata {
   date: string;
   description: string;
   tags: string[];
+  thumbnail?: string;
 }
 
 /**
@@ -45,6 +47,7 @@ export function getAllPosts(): Post[] {
         date: data.date || new Date().toISOString(),
         description: data.description || "",
         tags: data.tags || [],
+        thumbnail: data.thumbnail,
         content,
       } as Post;
     })
@@ -58,12 +61,13 @@ export function getAllPosts(): Post[] {
  */
 export function getAllPostsMetadata(): PostMetadata[] {
   const posts = getAllPosts();
-  return posts.map(({ slug, title, date, description, tags }) => ({
+  return posts.map(({ slug, title, date, description, tags, thumbnail }) => ({
     slug,
     title,
     date,
     description,
     tags,
+    thumbnail,
   }));
 }
 
@@ -88,6 +92,7 @@ export function getPostBySlug(slug: string): Post | null {
       date: data.date || new Date().toISOString(),
       description: data.description || "",
       tags: data.tags || [],
+      thumbnail: data.thumbnail,
       content,
     };
   } catch (error) {
