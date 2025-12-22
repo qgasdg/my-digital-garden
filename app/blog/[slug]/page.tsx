@@ -82,7 +82,7 @@ export default async function BlogPost({ params }: PageProps) {
         </header>
 
         {/* Article Content */}
-        <article className="max-w-3xl mx-auto px-6 py-16 relative z-10">
+        <article className="max-w-5xl mx-auto px-6 py-16 relative z-10">
           {/* Article Header */}
           <header className="mb-12 space-y-6">
             <div className="flex flex-wrap gap-2">

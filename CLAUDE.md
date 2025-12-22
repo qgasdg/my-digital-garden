@@ -339,6 +339,40 @@ React Server Components (RSC) and Client Components have different serialization
 
 ---
 
+### [x] Phase 15: Adjust Typography Scale & Layout Width
+**Goal:** Refine visual proportions for better reading experience.
+
+**User Feedback:**
+- Headings were too large, overwhelming the content
+- Page width was too narrow, creating cramped layout
+
+**Implementation:**
+1. **Reduced Heading Sizes (~25%):**
+   - H1: `text-4xl` → `text-3xl` (1.875rem)
+   - H2: `text-3xl` → `text-2xl` (1.5rem)
+   - H3: `text-2xl` → `text-xl` (1.25rem)
+   - H4: `text-xl` → `text-lg` (1.125rem)
+   - H5: `text-lg` → `text-base` (1rem)
+   - H6: `text-base` → `text-sm` (0.875rem)
+
+2. **Increased Page Width (~35%):**
+   - Article container: `max-w-3xl` (768px) → `max-w-5xl` (1024px)
+   - Provides more breathing room for content and code blocks
+
+**Visual Impact:**
+- More balanced typography hierarchy
+- Better proportion between headings and body text
+- Wider layout reduces line breaks in code examples
+- Improved overall reading comfort
+
+**Files Modified:**
+- `components/mdx-heading-components.tsx` (updated all heading sizes)
+- `app/blog/[slug]/page.tsx` (changed article max-width)
+
+**Status:** ✅ Complete - Refined typography and layout proportions
+
+---
+
 ## Pending Phases
 (Add future phases here as they are planned)
 
