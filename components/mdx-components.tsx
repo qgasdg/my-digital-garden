@@ -92,15 +92,22 @@ export function Pre({ children, raw, ...props }: PreProps) {
 
 // Heading components with editorial serif style
 // Using ! prefix for Tailwind important to override prose styles
+// RED TEST: Verify component connection with inline styles
 const H1 = ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => (
-  <h1 className="!text-4xl !font-bold !font-serif !mt-8 !mb-4 !leading-tight !tracking-tight" {...props}>
-    {children}
+  <h1
+    {...props}
+    style={{ color: 'red', fontSize: '100px', border: '5px solid red', fontWeight: 'bold' }}
+  >
+    🔴 RED TEST: {children}
   </h1>
 );
 
 const H2 = ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => (
-  <h2 className="!text-3xl !font-semibold !font-serif !mt-8 !mb-4 !leading-tight !tracking-tight" {...props}>
-    {children}
+  <h2
+    {...props}
+    style={{ color: 'red', fontSize: '100px', border: '5px solid red', fontWeight: 'bold' }}
+  >
+    🔴 RED TEST H2: {children}
   </h2>
 );
 

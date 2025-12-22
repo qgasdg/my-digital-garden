@@ -292,6 +292,53 @@ Block: $$\int_0^\infty f(x)dx$$
 
 ---
 
+### [x] Phase 14: Fix MDX Heading Styles (Server/Client Component Split)
+**Goal:** Apply custom serif heading styles to MDX content by fixing RSC component compatibility.
+
+**Problem:**
+- Custom heading components (H1-H6) in `mdx-components.tsx` were not being applied
+- The file had `"use client"` directive, making ALL components client-side
+- `next-mdx-remote/rsc` (React Server Components) couldn't properly use client components
+- The `Pre` component needed client features (useState), forcing the entire file to be client-only
+
+**Root Cause:**
+When a file has `"use client"`, the entire module becomes a Client Component. The RSC version of MDXRemote has compatibility issues when receiving a client component object, causing it to ignore custom component mappings.
+
+**Implementation:**
+1. **Split Components into Two Files:**
+   - Created `components/mdx-heading-components.tsx` - Server Components (H1-H6, no "use client")
+   - Kept `components/mdx-components.tsx` - Client Component (Pre with useState/onClick)
+
+2. **Updated Import Strategy (app/blog/[slug]/page.tsx):**
+   - Import `Pre` from `mdx-components.tsx`
+   - Import `H1-H6` from `mdx-heading-components.tsx`
+   - Pass as inline object to MDXRemote: `components={{ h1: H1, h2: H2, ... }}`
+
+3. **Heading Styles Applied:**
+   - H1: `!text-4xl !font-bold !font-serif`
+   - H2: `!text-3xl !font-semibold !font-serif`
+   - H3: `!text-2xl !font-semibold !font-serif`
+   - H4-H6: Progressively smaller with serif styling
+   - Used `!` prefix (Tailwind important) to override prose defaults
+
+**Debugging Method:**
+- Used "Red Test" (inline styles with red color/border) to verify component connection
+- Confirmed that splitting resolved the issue
+
+**Files Created:**
+- `components/mdx-heading-components.tsx` (Server Components)
+
+**Files Modified:**
+- `app/blog/[slug]/page.tsx` (split imports, inline component object)
+- `components/mdx-components.tsx` (kept only Pre component)
+
+**Technical Insight:**
+React Server Components (RSC) and Client Components have different serialization boundaries. When passing components to `next-mdx-remote/rsc`, they must be serializable in the server context. Client Components break this contract, causing the custom component mapping to fail silently.
+
+**Status:** ✅ Complete - Headings now display with proper editorial serif styling
+
+---
+
 ## Pending Phases
 (Add future phases here as they are planned)
 
@@ -318,7 +365,8 @@ Blog/
 │   │   └── skeleton.tsx
 │   ├── firefly-background.tsx # Atmospheric particle effect
 │   ├── theme-toggle.tsx       # Dark/Light mode switcher
-│   └── mdx-components.tsx     # MDX custom components
+│   ├── mdx-components.tsx     # MDX client components (Pre)
+│   └── mdx-heading-components.tsx # MDX server components (H1-H6)
 ├── lib/
 │   ├── mdx.ts                 # MDX file reading/parsing
 │   ├── mdx-config.ts          # Rehype/Remark config

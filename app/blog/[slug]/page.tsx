@@ -12,7 +12,8 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { rehypePrettyCodeOptions } from "@/lib/mdx-config";
 import Link from "next/link";
 import { ArticleWrapper } from "./article-wrapper";
-import { mdxComponents } from "@/components/mdx-components";
+import { Pre } from "@/components/mdx-components";
+import { H1, H2, H3, H4, H5, H6 } from "@/components/mdx-heading-components";
 import { FireflyBackground } from "@/components/firefly-background";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -111,7 +112,15 @@ export default async function BlogPost({ params }: PageProps) {
           <div className="prose prose-lg max-w-none">
             <MDXRemote
               source={post.content}
-              components={mdxComponents}
+              components={{
+                h1: H1,
+                h2: H2,
+                h3: H3,
+                h4: H4,
+                h5: H5,
+                h6: H6,
+                pre: Pre,
+              }}
               options={{
                 mdxOptions: {
                   remarkPlugins: [remarkGfm, remarkMath],
