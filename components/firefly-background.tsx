@@ -81,12 +81,24 @@ export function FireflyBackground() {
 
   // Track mouse position (use pageX/Y for absolute positioning)
   useEffect(() => {
+    let debugCount = 0;
+
     const handleMouseMove = (e: MouseEvent) => {
       // Use pageX/pageY to account for scroll position with absolute positioning
-      mousePos.current = {
-        x: e.pageX || (e.clientX + window.scrollX),
-        y: e.pageY || (e.clientY + window.scrollY)
-      };
+      const pageX = e.pageX || (e.clientX + window.scrollX);
+      const pageY = e.pageY || (e.clientY + window.scrollY);
+
+      mousePos.current = { x: pageX, y: pageY };
+
+      // Debug: log mouse position occasionally
+      debugCount++;
+      if (debugCount % 60 === 0) {
+        console.log('Mouse position:', {
+          client: { x: e.clientX, y: e.clientY },
+          page: { x: pageX, y: pageY },
+          scroll: { x: window.scrollX, y: window.scrollY }
+        });
+      }
     };
 
     window.addEventListener("mousemove", handleMouseMove);
