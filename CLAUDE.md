@@ -373,6 +373,59 @@ React Server Components (RSC) and Client Components have different serialization
 
 ---
 
+### [x] Phase 16: Interactive Firefly Effects
+**Goal:** Make fireflies more visible and add mouse interaction for engaging user experience.
+
+**User Requirements:**
+- Increase firefly visibility (count and brightness by ~35%)
+- Add mouse avoidance effect with local interaction radius
+
+**Implementation:**
+1. **Visual Enhancements (+35%):**
+   - Increased count: 23 → 31 fireflies
+   - Increased brightness: opacity `[0.2, 0.4, 0.3, 0.2]` → `[0.3, 0.5, 0.4, 0.3]`
+   - More visible and atmospheric presence
+
+2. **Mouse Avoidance Effect:**
+   - 120px interaction radius (local, not global)
+   - Calculates distance from mouse to each firefly
+   - Applies repulsion force: `strength = (1 - distance/radius) * 50px`
+   - Fireflies smoothly move away when cursor approaches
+   - Repulsion added to base animation keyframes
+
+3. **Performance Optimizations:**
+   - Pre-generated animation keyframes (avoid recalculation)
+   - Throttled mouse tracking (~60fps with requestAnimationFrame)
+   - Separate `FireflyParticle` component for cleaner render logic
+   - Container rect cached and updated only on resize
+
+**Technical Details:**
+```typescript
+// Repulsion calculation
+const dx = fireflyX - mouseX;
+const dy = fireflyY - mouseY;
+const distance = Math.sqrt(dx * dx + dy * dy);
+
+if (distance < 120px) {
+  const strength = (1 - distance / 120) * 50;
+  const angle = Math.atan2(dy, dx);
+  repulsion = { x: cos(angle) * strength, y: sin(angle) * strength };
+}
+```
+
+**User Experience:**
+- More vibrant and noticeable firefly atmosphere
+- Subtle, playful interaction on mouse movement
+- Smooth, non-jarring animations
+- No performance degradation (throttled updates)
+
+**Files Modified:**
+- `components/firefly-background.tsx` (complete refactor with mouse interaction)
+
+**Status:** ✅ Complete - Enhanced visual presence with interactive mouse avoidance
+
+---
+
 ## Pending Phases
 (Add future phases here as they are planned)
 
