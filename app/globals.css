@@ -161,6 +161,41 @@ pre code {
 .prose h6 {
   font-family: var(--font-playfair), Georgia, serif;
   color: var(--foreground);
+  position: relative;
+}
+
+/* Heading anchor links (prepended by rehype-autolink-headings) */
+.prose h1 a,
+.prose h2 a,
+.prose h3 a,
+.prose h4 a,
+.prose h5 a,
+.prose h6 a {
+  opacity: 0;
+  margin-left: -1.5rem;
+  padding-right: 0.5rem;
+  color: var(--muted-foreground);
+  border-bottom: none;
+  transition: opacity 0.2s ease;
+}
+
+.prose h1:hover a,
+.prose h2:hover a,
+.prose h3:hover a,
+.prose h4:hover a,
+.prose h5:hover a,
+.prose h6:hover a {
+  opacity: 1;
+}
+
+.prose h1 a:hover,
+.prose h2 a:hover,
+.prose h3 a:hover,
+.prose h4 a:hover,
+.prose h5 a:hover,
+.prose h6 a:hover {
+  color: var(--accent);
+  border-bottom: none;
 }
 
 .prose p {

@@ -118,7 +118,7 @@ export default async function BlogPost({ params }: PageProps) {
                   rehypePlugins: [
                     rehypeKatex,
                     rehypeSlug,
-                    [rehypeAutolinkHeadings, { behavior: "wrap" }],
+                    [rehypeAutolinkHeadings, { behavior: "prepend" }],
                     [rehypePrettyCode, rehypePrettyCodeOptions],
                   ],
                 },
