@@ -4,6 +4,21 @@ import matter from "gray-matter";
 
 const postsDirectory = path.join(process.cwd(), "posts");
 
+/**
+ * Convert a filename to a URL-safe slug
+ * Example: "KL, JS Divergence.mdx" → "kl-js-divergence"
+ */
+function filenameToSlug(filename: string): string {
+  return filename
+    .replace(/\.(mdx|md)$/, "") // Remove extension
+    .toLowerCase() // Convert to lowercase
+    .replace(/[,]/g, "") // Remove commas
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/[^\w\-가-힣]/g, "") // Remove special chars (keep Korean, alphanumeric, hyphens)
+    .replace(/\-+/g, "-") // Replace multiple hyphens with single hyphen
+    .replace(/^-+|-+$/g, ""); // Trim hyphens from start/end
+}
+
 export interface Post {
   slug: string;
   title: string;
@@ -34,9 +49,9 @@ export function getAllPosts(): Post[] {
 
   const fileNames = fs.readdirSync(postsDirectory);
   const posts = fileNames
-    .filter((fileName) => fileName.endsWith(".mdx"))
+    .filter((fileName) => fileName.endsWith(".mdx") || fileName.endsWith(".md"))
     .map((fileName) => {
-      const slug = fileName.replace(/\.mdx$/, "");
+      const slug = filenameToSlug(fileName);
       const fullPath = path.join(postsDirectory, fileName);
       const fileContents = fs.readFileSync(fullPath, "utf8");
       const { data, content } = matter(fileContents);
@@ -75,14 +90,26 @@ export function getAllPostsMetadata(): PostMetadata[] {
  * Get a single post by slug
  */
 export function getPostBySlug(slug: string): Post | null {
-  const fullPath = path.join(postsDirectory, `${slug}.mdx`);
+  // Try to find the post by checking all possible filenames
+  if (!fs.existsSync(postsDirectory)) {
+    return null;
+  }
 
-  // Check if file exists before attempting to read
-  if (!fs.existsSync(fullPath)) {
+  const allFiles = fs.readdirSync(postsDirectory);
+  const matchingFile = allFiles.find((fileName) => {
+    if (!fileName.endsWith(".mdx") && !fileName.endsWith(".md")) {
+      return false;
+    }
+    const fileSlug = filenameToSlug(fileName);
+    return fileSlug === slug || fileName === `${slug}.mdx` || fileName === `${slug}.md`;
+  });
+
+  if (!matchingFile) {
     return null;
   }
 
   try {
+    const fullPath = path.join(postsDirectory, matchingFile);
     const fileContents = fs.readFileSync(fullPath, "utf8");
     const { data, content } = matter(fileContents);
 
@@ -111,8 +138,8 @@ export function getAllPostSlugs(): string[] {
 
   const fileNames = fs.readdirSync(postsDirectory);
   return fileNames
-    .filter((fileName) => fileName.endsWith(".mdx"))
-    .map((fileName) => fileName.replace(/\.mdx$/, ""));
+    .filter((fileName) => fileName.endsWith(".mdx") || fileName.endsWith(".md"))
+    .map((fileName) => filenameToSlug(fileName));
 }
 
 /**

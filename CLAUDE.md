@@ -208,6 +208,49 @@ thumbnail: "/images/your-image.jpg"
 
 ---
 
+### [x] Phase 12: Obsidian-Compatible Filename Handling
+**Goal:** Support both .md and .mdx files with URL-safe slug generation for Obsidian workflow.
+
+**Problem:**
+- System only read `.mdx` files, ignored `.md` files
+- Filenames with spaces and special characters (e.g., "KL, JS Divergence.mdx") caused broken links
+- Obsidian users often use spaces and commas in filenames
+
+**Implementation:**
+1. **Slug Conversion Function (`filenameToSlug`):**
+   - Converts filenames to URL-safe slugs
+   - Removes file extensions (`.md`, `.mdx`)
+   - Lowercases all characters
+   - Removes commas and special characters
+   - Replaces spaces with hyphens
+   - Supports Korean characters (가-힣)
+   - Examples:
+     - "KL, JS Divergence.mdx" → `kl-js-divergence`
+     - "Wasserstein Distance.mdx" → `wasserstein-distance`
+
+2. **File Format Support:**
+   - Updated `getAllPosts()` to accept both `.md` and `.mdx`
+   - Updated `getAllPostSlugs()` for static generation
+   - Modified `getPostBySlug()` to find files by matching slugs
+
+3. **Backward Compatibility:**
+   - Existing files like `hello-world.mdx` still work as before
+   - Supports both filename formats: `hello-world.mdx` and `Hello World.mdx`
+
+**Files Modified:**
+- `lib/mdx.ts` (added `filenameToSlug()`, updated all file reading functions)
+
+**Usage Example:**
+```
+Filename: "KL, JS Divergence.mdx"
+→ URL: /blog/kl-js-divergence
+→ Works seamlessly
+```
+
+**Status:** ✅ Complete - Full Obsidian compatibility with URL-safe slugs
+
+---
+
 ## Pending Phases
 (Add future phases here as they are planned)
 
