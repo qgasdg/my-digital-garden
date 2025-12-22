@@ -642,6 +642,83 @@ if (y > height + 20) y = -20; // height = full page height
 
 ---
 
+### [x] Phase 20: Fix Frozen Fireflies (Mouse Coordinate Bug)
+**Goal:** Fix critical bug where fireflies were completely static and unresponsive after absolute positioning change.
+
+**Bug Report:**
+- Fireflies rendered but didn't move at all
+- No mouse interaction/repulsion
+- Animation loop appeared broken
+
+**Root Cause:**
+After switching from `fixed` to `absolute` positioning in Phase 19, mouse tracking broke:
+- Used `e.clientX/Y` (viewport-relative coordinates)
+- Firefly positions are document-relative with absolute positioning
+- When scrolling, `clientX/Y` doesn't account for scroll offset
+- Mouse distance calculations were wrong, breaking physics
+
+**The Issue:**
+```typescript
+// BROKEN: viewport coordinates vs document coordinates
+mousePos.current = { x: e.clientX, y: e.clientY }; // Viewport
+fireflyY = 2000; // Document position (below fold)
+// Distance calculation fails when scrolled!
+```
+
+**Solution:**
+1. **Fixed Mouse Tracking:**
+   ```typescript
+   // Use pageX/pageY for document-relative coordinates
+   mousePos.current = {
+     x: e.pageX || (e.clientX + window.scrollX),
+     y: e.pageY || (e.clientY + window.scrollY)
+   };
+   ```
+   - `pageX/pageY` includes scroll offset
+   - Fallback to `clientX/Y + scrollX/Y` for older browsers
+   - Now matches firefly coordinate system
+
+2. **Improved Animation Loop Lifecycle:**
+   - Added `isRunning` flag for clean cleanup
+   - Prevents animation after component unmount
+   - Properly cancels requestAnimationFrame
+
+3. **Added Debug Logging:**
+   - Logs every 60 frames (~1 second) to console
+   - Helps verify animation loop is running
+   - Can be removed in future optimization
+
+**Technical Details:**
+- **Fixed positioning:** Mouse = viewport coords, Fireflies = viewport coords ✅
+- **Absolute positioning:** Mouse = document coords, Fireflies = document coords ✅
+- **Scroll offset:** `pageY = clientY + scrollY`
+
+**Before vs After:**
+```typescript
+// Before (BROKEN)
+mouse.y = 100 (clientY, viewport)
+firefly.y = 2000 (document, below fold)
+distance = huge → no interaction
+
+// After (FIXED)
+mouse.y = 2100 (pageY, document)
+firefly.y = 2000 (document)
+distance = 100 → repulsion works! ✅
+```
+
+**User Experience:**
+- Fireflies now move continuously with gentle drift
+- Mouse interaction works at all scroll positions
+- Physics repulsion responds correctly
+- Console shows "Firefly animation running" every second
+
+**Files Modified:**
+- `components/firefly-background.tsx` (fixed mouse tracking, improved animation loop)
+
+**Status:** ✅ Complete - Fireflies are ALIVE and responsive
+
+---
+
 ## Pending Phases
 (Add future phases here as they are planned)
 

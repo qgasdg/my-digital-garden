@@ -79,10 +79,14 @@ export function FireflyBackground() {
     setInitialized(true);
   }, [count, dimensions]);
 
-  // Track mouse position
+  // Track mouse position (use pageX/Y for absolute positioning)
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      mousePos.current = { x: e.clientX, y: e.clientY };
+      // Use pageX/pageY to account for scroll position with absolute positioning
+      mousePos.current = {
+        x: e.pageX || (e.clientX + window.scrollX),
+        y: e.pageY || (e.clientY + window.scrollY)
+      };
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -93,10 +97,21 @@ export function FireflyBackground() {
   useEffect(() => {
     if (!initialized) return;
 
+    let isRunning = true;
+    let frameCount = 0;
+
     const animate = () => {
+      if (!isRunning) return;
+
+      frameCount++;
+      // Debug: log every 60 frames (roughly 1 second)
+      if (frameCount % 60 === 0) {
+        console.log('Firefly animation running, frame:', frameCount);
+      }
+
       const { width, height } = dimensions;
 
-      // Skip if dimensions aren't valid
+      // Skip if dimensions aren't valid but keep animating
       if (width <= 0 || height <= 0) {
         animationFrameRef.current = requestAnimationFrame(animate);
         return;
@@ -169,12 +184,15 @@ export function FireflyBackground() {
       animationFrameRef.current = requestAnimationFrame(animate);
     };
 
-    // Small delay to ensure elements are mounted
+    // Start animation loop after elements are mounted
     const timeoutId = setTimeout(() => {
-      animationFrameRef.current = requestAnimationFrame(animate);
+      if (isRunning) {
+        animationFrameRef.current = requestAnimationFrame(animate);
+      }
     }, 100);
 
     return () => {
+      isRunning = false;
       clearTimeout(timeoutId);
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
