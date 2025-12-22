@@ -426,6 +426,73 @@ if (distance < 120px) {
 
 ---
 
+### [x] Phase 17: Physics-Based Firefly Movement (No Elastic Snap-Back)
+**Goal:** Replace elastic "rubber band" behavior with realistic physics where fireflies permanently move to new locations.
+
+**Problem:**
+- Previous implementation used Framer Motion with offset-based positioning
+- Fireflies would "snap back" to origin when mouse moved away (elastic behavior)
+- User wanted realistic physics like billiard balls or real insects
+
+**Solution - Velocity-Based Physics:**
+1. **Removed Origin Dependency:**
+   - Position is now absolute (x, y in pixels), not `origin + offset`
+   - Fireflies never "remember" where they started
+
+2. **Added Velocity System:**
+   - Each firefly has velocity vector (vx, vy)
+   - Mouse repulsion applies force to **velocity**, not position
+   - Position updates based on velocity: `x += vx`, `y += vy`
+
+3. **Physics Forces:**
+   - **Repulsion Force:** `force = (1 - distance/radius) * 0.8`
+   - **Random Drift:** `vx += random(-0.08, 0.08)` for natural floating
+   - **Friction/Damping:** `vx *= 0.97` to prevent flying off forever
+   - **Velocity Cap:** `maxSpeed = 4px/frame` to prevent extreme speeds
+
+4. **Boundary Handling:**
+   - Wrapping at screen edges (fireflies teleport to opposite side)
+   - 20px buffer zone for smooth transitions
+   - No fireflies lost off-screen
+
+5. **Performance Optimization:**
+   - Removed Framer Motion dependency (heavy library)
+   - Direct DOM manipulation via `element.style.transform`
+   - No React re-renders on every frame (60fps)
+   - Uses `requestAnimationFrame` for smooth animation
+
+**Physics Equation:**
+```typescript
+// Apply mouse repulsion to velocity
+if (distance < 120px) {
+  force = (1 - distance/120) * 0.8
+  vx += cos(angle) * force
+  vy += sin(angle) * force
+}
+
+// Apply friction
+vx *= 0.97
+vy *= 0.97
+
+// Update position
+x += vx
+y += vy
+```
+
+**User Experience:**
+- Fireflies drift naturally like real insects
+- When pushed by mouse, they fly to new locations and continue floating there
+- No "snap back" or elastic behavior
+- Smooth, realistic physics simulation
+- More organic and less "programmed" feeling
+
+**Files Modified:**
+- `components/firefly-background.tsx` (complete rewrite - removed Framer Motion, added physics engine)
+
+**Status:** ✅ Complete - Realistic physics-based movement with permanent displacement
+
+---
+
 ## Pending Phases
 (Add future phases here as they are planned)
 

@@ -1,145 +1,146 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 
 interface Firefly {
   id: number;
-  x: number;
-  y: number;
+  x: number; // Current X position in pixels
+  y: number; // Current Y position in pixels
+  vx: number; // Velocity X
+  vy: number; // Velocity Y
   size: number;
-  duration: number;
-  delay: number;
-  animationX: number[];
-  animationY: number[];
-}
-
-// Individual firefly component with mouse avoidance
-function FireflyParticle({
-  firefly,
-  mousePos,
-  containerRect,
-}: {
-  firefly: Firefly;
-  mousePos: { x: number; y: number };
-  containerRect: DOMRect | null;
-}) {
-  // Calculate repulsion offset based on mouse proximity
-  const getRepulsion = () => {
-    if (!containerRect) return { x: 0, y: 0 };
-
-    const fireflyX = containerRect.left + (firefly.x / 100) * containerRect.width;
-    const fireflyY = containerRect.top + (firefly.y / 100) * containerRect.height;
-
-    const dx = fireflyX - mousePos.x;
-    const dy = fireflyY - mousePos.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    const interactionRadius = 120; // Avoidance radius in pixels
-
-    if (distance < interactionRadius && distance > 0) {
-      // Calculate repulsion strength (stronger when closer)
-      const strength = (1 - distance / interactionRadius) * 50;
-      const angle = Math.atan2(dy, dx);
-
-      return {
-        x: Math.cos(angle) * strength,
-        y: Math.sin(angle) * strength,
-      };
-    }
-
-    return { x: 0, y: 0 };
-  };
-
-  const repulsion = getRepulsion();
-
-  return (
-    <motion.div
-      className="absolute rounded-full"
-      style={{
-        left: `${firefly.x}%`,
-        top: `${firefly.y}%`,
-        width: firefly.size,
-        height: firefly.size,
-        background: "var(--firefly-color)",
-        boxShadow: `0 0 ${firefly.size * 4}px ${firefly.size * 2}px var(--firefly-glow)`,
-        willChange: "transform, opacity",
-      }}
-      animate={{
-        x: firefly.animationX.map((val) => val + repulsion.x),
-        y: firefly.animationY.map((val) => val + repulsion.y),
-        opacity: [0.3, 0.5, 0.4, 0.3], // 35% brighter than before
-        scale: [1, 1.2, 0.9, 1],
-      }}
-      transition={{
-        duration: firefly.duration,
-        delay: firefly.delay,
-        repeat: Infinity,
-        ease: "easeInOut",
-      }}
-    />
-  );
+  opacity: number;
+  targetOpacity: number;
+  element: HTMLDivElement | null;
 }
 
 export function FireflyBackground() {
-  // Initialize fireflies as empty array to avoid hydration mismatch
-  const [fireflies, setFireflies] = useState<Firefly[]>([]);
-  const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 }); // Start off-screen
+  const [count] = useState(31);
+  const firefliesRef = useRef<Firefly[]>([]);
+  const mousePos = useRef({ x: -1000, y: -1000 });
   const containerRef = useRef<HTMLDivElement>(null);
-  const [containerRect, setContainerRect] = useState<DOMRect | null>(null);
+  const animationFrameRef = useRef<number>();
 
-  // Generate random fireflies only on client-side after hydration
+  // Initialize fireflies data
   useEffect(() => {
-    const count = 31; // Number of fireflies (35% increase from 23)
-    const generatedFireflies = Array.from({ length: count }, (_, i) => ({
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    firefliesRef.current = Array.from({ length: count }, (_, i) => ({
       id: i,
-      x: Math.random() * 100, // Random X position (percentage)
-      y: Math.random() * 100, // Random Y position (percentage)
-      size: Math.random() * 3 + 2, // Size between 2-5px
-      duration: Math.random() * 10 + 15, // Duration between 15-25s
-      delay: Math.random() * 5, // Random initial delay
-      // Pre-generate animation keyframes to avoid recalculation
-      animationX: [0, Math.random() * 200 - 100, Math.random() * 200 - 100, 0],
-      animationY: [0, Math.random() * 200 - 100, Math.random() * 200 - 100, 0],
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * 0.5, // Random initial velocity
+      vy: (Math.random() - 0.5) * 0.5,
+      size: Math.random() * 3 + 2,
+      opacity: 0.3 + Math.random() * 0.2,
+      targetOpacity: 0.3 + Math.random() * 0.2,
+      element: null,
     }));
-    setFireflies(generatedFireflies);
-  }, []);
+  }, [count]);
 
-  // Update container rect on mount and resize
+  // Track mouse position
   useEffect(() => {
-    const updateRect = () => {
-      if (containerRef.current) {
-        setContainerRect(containerRef.current.getBoundingClientRect());
-      }
-    };
-
-    updateRect();
-    window.addEventListener("resize", updateRect);
-    return () => window.removeEventListener("resize", updateRect);
-  }, []);
-
-  // Track mouse position for avoidance effect (throttled)
-  useEffect(() => {
-    let frameId: number;
-    let lastUpdate = 0;
-
     const handleMouseMove = (e: MouseEvent) => {
-      const now = Date.now();
-      // Throttle updates to ~60fps for performance
-      if (now - lastUpdate < 16) return;
-
-      lastUpdate = now;
-      frameId = requestAnimationFrame(() => {
-        setMousePos({ x: e.clientX, y: e.clientY });
-      });
+      mousePos.current = { x: e.clientX, y: e.clientY };
     };
 
     window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  // Physics-based animation loop
+  useEffect(() => {
+    const animate = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      firefliesRef.current.forEach((firefly) => {
+        let { x, y, vx, vy, opacity, targetOpacity, element } = firefly;
+
+        if (!element) return;
+
+        // Mouse repulsion - applies force to VELOCITY, not position
+        const dx = x - mousePos.current.x;
+        const dy = y - mousePos.current.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const interactionRadius = 120;
+
+        if (distance < interactionRadius && distance > 0) {
+          // Apply repulsion force to velocity
+          const force = (1 - distance / interactionRadius) * 0.8;
+          const angle = Math.atan2(dy, dx);
+          vx += Math.cos(angle) * force;
+          vy += Math.sin(angle) * force;
+        }
+
+        // Random floating force (gentle drift)
+        vx += (Math.random() - 0.5) * 0.08;
+        vy += (Math.random() - 0.5) * 0.08;
+
+        // Apply friction (damping) to prevent flying off forever
+        vx *= 0.97;
+        vy *= 0.97;
+
+        // Cap maximum velocity
+        const maxSpeed = 4;
+        const speed = Math.sqrt(vx * vx + vy * vy);
+        if (speed > maxSpeed) {
+          vx = (vx / speed) * maxSpeed;
+          vy = (vy / speed) * maxSpeed;
+        }
+
+        // Update position based on velocity (physics integration)
+        x += vx;
+        y += vy;
+
+        // Boundary wrapping (fireflies wrap around screen edges)
+        if (x < -20) x = width + 20;
+        if (x > width + 20) x = -20;
+        if (y < -20) y = height + 20;
+        if (y > height + 20) y = -20;
+
+        // Opacity animation (gentle pulsing)
+        if (Math.random() < 0.01) {
+          targetOpacity = 0.3 + Math.random() * 0.2;
+        }
+        opacity += (targetOpacity - opacity) * 0.05;
+
+        // Update firefly state
+        firefly.x = x;
+        firefly.y = y;
+        firefly.vx = vx;
+        firefly.vy = vy;
+        firefly.opacity = opacity;
+        firefly.targetOpacity = targetOpacity;
+
+        // Update DOM directly for performance (avoid React re-renders)
+        element.style.transform = `translate(${x}px, ${y}px)`;
+        element.style.opacity = opacity.toString();
+      });
+
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    // Small delay to ensure elements are mounted
+    const timeoutId = setTimeout(() => {
+      animationFrameRef.current = requestAnimationFrame(animate);
+    }, 100);
+
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      cancelAnimationFrame(frameId);
+      clearTimeout(timeoutId);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
     };
   }, []);
+
+  // Callback to store element refs
+  const setFireflyRef = (index: number) => (element: HTMLDivElement | null) => {
+    if (firefliesRef.current[index]) {
+      firefliesRef.current[index].element = element;
+    }
+  };
 
   return (
     <div
@@ -147,14 +148,32 @@ export function FireflyBackground() {
       className="fixed inset-0 pointer-events-none overflow-hidden z-0"
       aria-hidden="true"
     >
-      {fireflies.map((firefly) => (
-        <FireflyParticle
-          key={firefly.id}
-          firefly={firefly}
-          mousePos={mousePos}
-          containerRect={containerRect}
-        />
-      ))}
+      {Array.from({ length: count }, (_, i) => {
+        const firefly = firefliesRef.current[i] || {
+          id: i,
+          size: 3,
+          x: 0,
+          y: 0,
+          opacity: 0.3,
+        };
+
+        return (
+          <div
+            key={i}
+            ref={setFireflyRef(i)}
+            className="absolute rounded-full"
+            style={{
+              left: 0,
+              top: 0,
+              width: firefly.size,
+              height: firefly.size,
+              background: "var(--firefly-color)",
+              boxShadow: `0 0 ${firefly.size * 4}px ${firefly.size * 2}px var(--firefly-glow)`,
+              willChange: "transform, opacity",
+            }}
+          />
+        );
+      })}
     </div>
   );
 }
