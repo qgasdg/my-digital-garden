@@ -18,7 +18,7 @@ export function FireflyBackground() {
 
   // Generate random fireflies only on client-side after hydration
   useEffect(() => {
-    const count = 15; // Number of fireflies - keep it low for performance
+    const count = 23; // Number of fireflies (1.5x from original 15)
     const generatedFireflies = Array.from({ length: count }, (_, i) => ({
       id: i,
       x: Math.random() * 100, // Random X position (percentage)
@@ -51,14 +51,14 @@ export function FireflyBackground() {
           animate={{
             x: [
               0,
-              Math.random() * 100 - 50,
-              Math.random() * 100 - 50,
+              Math.random() * 200 - 100,
+              Math.random() * 200 - 100,
               0,
             ],
             y: [
               0,
-              Math.random() * 100 - 50,
-              Math.random() * 100 - 50,
+              Math.random() * 200 - 100,
+              Math.random() * 200 - 100,
               0,
             ],
             opacity: [0.2, 0.4, 0.3, 0.2],
