@@ -5,26 +5,26 @@
 /* Light Mode (Default) - Warm Paper Aesthetic */
 :root {
   /* Base Colors - Warm Off-White Paper Tones */
-  --background: #FAF8F5;
-  --foreground: #2D2D2D;
+  --background: #faf8f5;
+  --foreground: #2d2d2d;
 
   /* Surface & Card Colors */
-  --card: #FFFFFF;
-  --card-foreground: #2D2D2D;
+  --card: #ffffff;
+  --card-foreground: #2d2d2d;
 
   /* Muted tones for subtle elements */
-  --muted: #E8E5E0;
-  --muted-foreground: #6B6B6B;
+  --muted: #e8e5e0;
+  --muted-foreground: #6b6b6b;
 
   /* Accent - Warm Editorial Brown */
-  --accent: #8B7355;
-  --accent-foreground: #FAF8F5;
+  --accent: #8b7355;
+  --accent-foreground: #faf8f5;
 
   /* Border - Subtle warm grey */
-  --border: #E0DDD8;
+  --border: #e0ddd8;
 
   /* Code block background - Warm grey */
-  --code-bg: #F5F3F0;
+  --code-bg: #f5f3f0;
 
   /* Firefly particles - warm golden glow */
   --firefly-color: rgba(255, 200, 87, 0.3);
@@ -34,23 +34,23 @@
 /* Dark Mode - Atmospheric & Mysterious */
 .dark {
   /* Base Colors - Deep warm tones */
-  --background: #1A1816;
-  --foreground: #E8E5E0;
+  --background: #1a1816;
+  --foreground: #e8e5e0;
 
   /* Surface & Card Colors */
   --card: #252220;
-  --card-foreground: #E8E5E0;
+  --card-foreground: #e8e5e0;
 
   /* Muted tones */
-  --muted: #2D2A28;
-  --muted-foreground: #9B9591;
+  --muted: #2d2a28;
+  --muted-foreground: #9b9591;
 
   /* Accent - Warm amber/gold for dark mode */
-  --accent: #D4A574;
-  --accent-foreground: #1A1816;
+  --accent: #d4a574;
+  --accent-foreground: #1a1816;
 
   /* Border - Subtle */
-  --border: #3A3633;
+  --border: #3a3633;
 
   /* Code block background */
   --code-bg: #252220;
@@ -97,7 +97,12 @@ body {
 }
 
 /* Base Typography Styles */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-playfair), Georgia, serif;
   font-weight: 600;
   line-height: 1.2;
@@ -155,6 +160,34 @@ pre code {
   font-family: var(--font-playfair), Georgia, serif;
   font-weight: 600;
   letter-spacing: -0.02em;
+  margin-top: 2em;
+  margin-bottom: 1em;
+  line-height: 1.3;
+}
+
+.prose h1 {
+  font-size: 2.25em; /* 36px */
+}
+
+.prose h2 {
+  font-size: 1.875em; /* 30px */
+}
+
+.prose h3 {
+  font-size: 1.5em; /* 24px */
+}
+
+.prose h4 {
+  font-size: 1.25em; /* 20px */
+}
+
+.prose h5 {
+  font-size: 1.125em; /* 18px */
+}
+
+.prose h6 {
+  font-size: 1em; /* 16px */
+  font-weight: 700;
 }
 
 .prose p {
@@ -359,27 +392,25 @@ pre code {
   content: "";
   position: absolute;
   inset: 0;
-  background-image:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 0, 0, 0.01) 2px,
-      rgba(0, 0, 0, 0.01) 4px
-    );
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.01) 2px,
+    rgba(0, 0, 0, 0.01) 4px
+  );
   pointer-events: none;
   opacity: 0.3;
 }
 
 .dark .paper-texture::before {
-  background-image:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(255, 255, 255, 0.01) 2px,
-      rgba(255, 255, 255, 0.01) 4px
-    );
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.01) 2px,
+    rgba(255, 255, 255, 0.01) 4px
+  );
   opacity: 0.15;
 }
 
@@ -391,18 +422,19 @@ pre code {
 @layer base {
   * {
     /* Only transition color properties - no layout properties for performance */
-    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, box-shadow;
+    transition-property: color, background-color, border-color,
+      text-decoration-color, fill, stroke, box-shadow;
     /* Smooth, natural easing curve */
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); /* ease-in-out */
-    /* Slower duration for a calming, soft feel */
-    transition-duration: 700ms;
+    /* Dreamy, slow duration for atmospheric theme transitions */
+    transition-duration: 1000ms;
   }
 
   /* Ensure body transitions smoothly */
   body {
     transition-property: color, background-color;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 700ms;
+    transition-duration: 1000ms;
   }
 }
 
