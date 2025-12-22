@@ -16,15 +16,22 @@ interface Firefly {
 
 export function FireflyBackground() {
   const [count] = useState(31);
+  const [initialized, setInitialized] = useState(false);
   const firefliesRef = useRef<Firefly[]>([]);
   const mousePos = useRef({ x: -1000, y: -1000 });
   const containerRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number>();
 
-  // Initialize fireflies data
+  // Initialize fireflies data only after dimensions are available
   useEffect(() => {
+    // Guard: ensure window dimensions are valid
+    if (typeof window === 'undefined') return;
+
     const width = window.innerWidth;
     const height = window.innerHeight;
+
+    // Don't initialize if dimensions are invalid
+    if (width === 0 || height === 0) return;
 
     firefliesRef.current = Array.from({ length: count }, (_, i) => ({
       id: i,
@@ -37,6 +44,8 @@ export function FireflyBackground() {
       targetOpacity: 0.3 + Math.random() * 0.2,
       element: null,
     }));
+
+    setInitialized(true);
   }, [count]);
 
   // Track mouse position
@@ -64,11 +73,11 @@ export function FireflyBackground() {
         const dx = x - mousePos.current.x;
         const dy = y - mousePos.current.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        const interactionRadius = 120;
+        const interactionRadius = 60; // Reduced by 50% (was 120)
 
         if (distance < interactionRadius && distance > 0) {
-          // Apply repulsion force to velocity
-          const force = (1 - distance / interactionRadius) * 0.8;
+          // Apply repulsion force to velocity (reduced by 50%)
+          const force = (1 - distance / interactionRadius) * 0.4; // Was 0.8
           const angle = Math.atan2(dy, dx);
           vx += Math.cos(angle) * force;
           vy += Math.sin(angle) * force;
@@ -142,38 +151,41 @@ export function FireflyBackground() {
     }
   };
 
+  // Don't render fireflies until properly initialized
+  if (!initialized) {
+    return (
+      <div
+        ref={containerRef}
+        className="fixed inset-0 pointer-events-none overflow-hidden z-0"
+        aria-hidden="true"
+      />
+    );
+  }
+
   return (
     <div
       ref={containerRef}
       className="fixed inset-0 pointer-events-none overflow-hidden z-0"
       aria-hidden="true"
     >
-      {Array.from({ length: count }, (_, i) => {
-        const firefly = firefliesRef.current[i] || {
-          id: i,
-          size: 3,
-          x: 0,
-          y: 0,
-          opacity: 0.3,
-        };
-
-        return (
-          <div
-            key={i}
-            ref={setFireflyRef(i)}
-            className="absolute rounded-full"
-            style={{
-              left: 0,
-              top: 0,
-              width: firefly.size,
-              height: firefly.size,
-              background: "var(--firefly-color)",
-              boxShadow: `0 0 ${firefly.size * 4}px ${firefly.size * 2}px var(--firefly-glow)`,
-              willChange: "transform, opacity",
-            }}
-          />
-        );
-      })}
+      {firefliesRef.current.map((firefly, i) => (
+        <div
+          key={firefly.id}
+          ref={setFireflyRef(i)}
+          className="absolute rounded-full"
+          style={{
+            left: 0,
+            top: 0,
+            width: firefly.size,
+            height: firefly.size,
+            background: "var(--firefly-color)",
+            boxShadow: `0 0 ${firefly.size * 4}px ${firefly.size * 2}px var(--firefly-glow)`,
+            willChange: "transform, opacity",
+            transform: `translate(${firefly.x}px, ${firefly.y}px)`,
+            opacity: firefly.opacity,
+          }}
+        />
+      ))}
     </div>
   );
 }

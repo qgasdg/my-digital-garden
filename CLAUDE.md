@@ -493,6 +493,78 @@ y += vy
 
 ---
 
+### [x] Phase 18: Fix Firefly Initialization Bug & Gentle Physics
+**Goal:** Fix (0,0) clumping on page refresh and make mouse interaction gentler.
+
+**Bug Report:**
+- On page refresh (F5), all fireflies spawned clustered at top-left corner (0,0)
+- Interaction was too aggressive - fireflies shot away like bullets
+- Interaction radius was too wide
+
+**Root Cause Analysis:**
+1. **Initial Render Problem:**
+   - Render happened before initialization effect completed
+   - Fallback object had `x: 0, y: 0`, causing clumping
+   - No guard to wait for valid window dimensions
+
+2. **Timing Issue:**
+   - `firefliesRef.current[i]` was undefined during first render
+   - Component rendered before `useEffect` populated positions
+
+**Solution:**
+1. **Added Initialization Guard:**
+   - New `initialized` state tracks when fireflies are ready
+   - Don't render until `initialized === true`
+   - Prevents rendering with invalid/missing data
+
+2. **Dimension Validation:**
+   ```typescript
+   if (typeof window === 'undefined') return;
+   if (width === 0 || height === 0) return;
+   ```
+   - Only initialize when window dimensions are valid
+   - Prevents `Math.random() * 0 = 0` bug
+
+3. **Initial Position Rendering:**
+   - Set `transform` and `opacity` in initial style
+   - Uses actual firefly data, not fallback
+   - Ensures correct positioning from first frame
+
+4. **Physics Adjustments (50% Gentler):**
+   - Interaction radius: 120px → 60px
+   - Repulsion force: 0.8 → 0.4
+   - Mouse must be closer to affect fireflies
+   - Push effect is more subtle and gentle
+
+**Code Changes:**
+```typescript
+// Before: immediate render with fallback
+{Array.from({ length: count }, (_, i) => {
+  const firefly = firefliesRef.current[i] || { x: 0, y: 0 }; // Bug!
+  ...
+})}
+
+// After: wait for initialization
+if (!initialized) return <div />;
+{firefliesRef.current.map((firefly, i) => (
+  <div style={{ transform: `translate(${firefly.x}px, ${firefly.y}px)` }} />
+))}
+```
+
+**User Experience:**
+- Fireflies spawn evenly distributed across entire screen immediately
+- No clumping at (0,0) even on hard refresh
+- Gentler, more subtle mouse interaction
+- Cursor must be closer to push fireflies away
+- Push effect feels natural, not violent
+
+**Files Modified:**
+- `components/firefly-background.tsx` (added initialization guard, reduced physics parameters)
+
+**Status:** ✅ Complete - Clean initialization and gentler interactions
+
+---
+
 ## Pending Phases
 (Add future phases here as they are planned)
 
