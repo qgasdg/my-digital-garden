@@ -56,10 +56,21 @@ export function getAllPosts(): Post[] {
       const fileContents = fs.readFileSync(fullPath, "utf8");
       const { data, content } = matter(fileContents);
 
+      // Ensure date is always an ISO string for consistency
+      let dateString: string;
+      if (data.date) {
+        // gray-matter may parse YAML dates as Date objects
+        dateString = data.date instanceof Date
+          ? data.date.toISOString()
+          : new Date(data.date).toISOString();
+      } else {
+        dateString = new Date().toISOString();
+      }
+
       return {
         slug,
         title: data.title || "Untitled",
-        date: data.date || new Date().toISOString(),
+        date: dateString,
         description: data.description || "",
         tags: data.tags || [],
         thumbnail: data.thumbnail,
@@ -113,10 +124,21 @@ export function getPostBySlug(slug: string): Post | null {
     const fileContents = fs.readFileSync(fullPath, "utf8");
     const { data, content } = matter(fileContents);
 
+    // Ensure date is always an ISO string for consistency
+    let dateString: string;
+    if (data.date) {
+      // gray-matter may parse YAML dates as Date objects
+      dateString = data.date instanceof Date
+        ? data.date.toISOString()
+        : new Date(data.date).toISOString();
+    } else {
+      dateString = new Date().toISOString();
+    }
+
     return {
       slug,
       title: data.title || "Untitled",
-      date: data.date || new Date().toISOString(),
+      date: dateString,
       description: data.description || "",
       tags: data.tags || [],
       thumbnail: data.thumbnail,
