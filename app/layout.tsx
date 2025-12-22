@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import "katex/dist/katex.min.css";
 
 // Serif font for headings - Editorial style
 const playfair = Playfair_Display({

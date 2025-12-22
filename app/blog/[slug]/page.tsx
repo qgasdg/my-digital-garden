@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import rehypePrettyCode from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { rehypePrettyCodeOptions } from "@/lib/mdx-config";
@@ -68,7 +70,7 @@ export default async function BlogPost({ params }: PageProps) {
                   <Link href="/" className="hover:text-foreground transition-colors">
                     Archive
                   </Link>
-                  <Link href="#" className="hover:text-foreground transition-colors">
+                  <Link href="/about" className="hover:text-foreground transition-colors">
                     About
                   </Link>
                 </div>
@@ -112,8 +114,9 @@ export default async function BlogPost({ params }: PageProps) {
               components={mdxComponents}
               options={{
                 mdxOptions: {
-                  remarkPlugins: [remarkGfm],
+                  remarkPlugins: [remarkGfm, remarkMath],
                   rehypePlugins: [
+                    rehypeKatex,
                     rehypeSlug,
                     [rehypeAutolinkHeadings, { behavior: "wrap" }],
                     [rehypePrettyCode, rehypePrettyCodeOptions],

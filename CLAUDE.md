@@ -251,6 +251,47 @@ Filename: "KL, JS Divergence.mdx"
 
 ---
 
+### [x] Phase 13: LaTeX Math Equation Support
+**Goal:** Enable LaTeX math rendering for mathematical and scientific content.
+
+**Problem:**
+- KLD and Wasserstein Distance posts contained LaTeX equations ($$ $$, $ $)
+- MDX threw `ReferenceError: KL is not defined` - treating LaTeX as JavaScript
+- No math rendering support by default
+
+**Implementation:**
+1. **Installed Math Packages:**
+   - `remark-math`: Parses math syntax in Markdown
+   - `rehype-katex`: Renders math with KaTeX
+
+2. **MDX Configuration (app/blog/[slug]/page.tsx):**
+   - Added `remarkMath` to `remarkPlugins`
+   - Added `rehypeKatex` to `rehypePlugins` (before code highlighting)
+   - Proper plugin order: math → katex → syntax highlighting
+
+3. **Styling (app/layout.tsx):**
+   - Imported `katex/dist/katex.min.css` for proper math rendering
+
+4. **Content Fix:**
+   - Fixed `<br>` tags in tables → `<br/>` (self-closing)
+   - MDX requires proper HTML in table cells
+
+**Supported Math Syntax:**
+```markdown
+Inline: $E = mc^2$
+Block: $$\int_0^\infty f(x)dx$$
+```
+
+**Files Modified:**
+- `app/blog/[slug]/page.tsx` (added math plugins)
+- `app/layout.tsx` (imported KaTeX CSS)
+- `posts/Wasserstein Distance.mdx` (fixed table BR tags)
+- `package.json` (added remark-math, rehype-katex)
+
+**Status:** ✅ Complete - Full LaTeX math rendering support
+
+---
+
 ## Pending Phases
 (Add future phases here as they are planned)
 
