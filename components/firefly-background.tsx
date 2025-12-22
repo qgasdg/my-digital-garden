@@ -40,6 +40,7 @@ export function FireflyBackground() {
         canvas.width = width;
         canvas.height = height;
         dimensionsRef.current = { width, height };
+        console.log('Canvas initialized:', { width, height, fireflies: firefliesRef.current.length });
       }
     };
 
@@ -69,11 +70,17 @@ export function FireflyBackground() {
     };
 
     // Animation loop
+    let frameCount = 0;
     const animate = () => {
       const { width, height } = dimensionsRef.current;
       if (width === 0 || height === 0) {
         animationFrameRef.current = requestAnimationFrame(animate);
         return;
+      }
+
+      frameCount++;
+      if (frameCount === 1 || frameCount % 120 === 0) {
+        console.log('Canvas animating:', { frame: frameCount, fireflies: firefliesRef.current.length });
       }
 
       // Clear entire canvas
@@ -135,14 +142,11 @@ export function FireflyBackground() {
           firefly.size * 4
         );
 
-        // Use CSS variables for theming
-        const isDark = document.documentElement.classList.contains("dark");
-        const color = isDark
-          ? `rgba(255, 215, 110, ${firefly.opacity})`
-          : `rgba(255, 200, 87, ${firefly.opacity})`;
+        // TEMP: Bright red for visibility testing
+        const color = `rgba(255, 0, 0, ${firefly.opacity})`;
 
         gradient.addColorStop(0, color);
-        gradient.addColorStop(1, "rgba(255, 215, 110, 0)");
+        gradient.addColorStop(1, "rgba(255, 0, 0, 0)");
 
         ctx.fillStyle = gradient;
         ctx.beginPath();
@@ -181,7 +185,7 @@ export function FireflyBackground() {
     <canvas
       ref={canvasRef}
       className="absolute top-0 left-0 pointer-events-none"
-      style={{ zIndex: -1 }}
+      style={{ zIndex: 0 }}
       aria-hidden="true"
     />
   );

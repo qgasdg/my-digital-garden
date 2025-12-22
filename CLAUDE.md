@@ -734,7 +734,8 @@ distance = 100 → repulsion works! ✅
 **1. HTML5 Canvas Rendering:**
 ```typescript
 // Single canvas element covers full document
-<canvas width={document.scrollHeight} height={window.innerWidth} />
+canvas.width = window.innerWidth
+canvas.height = document.scrollHeight
 
 // Draw with radial gradients for glow effect
 ctx.createRadialGradient(x, y, 0, x, y, size * 4)
