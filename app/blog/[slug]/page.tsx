@@ -109,7 +109,7 @@ export default async function BlogPost({ params }: PageProps) {
           </header>
 
           {/* MDX Content */}
-          <div className="prose prose-lg max-w-none">
+          <div className="prose prose-lg max-w-none w-[90%] mx-auto">
             <MDXRemote
               source={post.content}
               components={{
