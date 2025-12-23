@@ -7,6 +7,8 @@ interface Firefly {
   y: number;
   vx: number;
   vy: number;
+  angle: number;
+  speed: number;
   size: number;
   opacity: number;
   targetOpacity: number;
@@ -17,7 +19,7 @@ export function FireflyBackground() {
   const firefliesRef = useRef<Firefly[]>([]);
   const mouseRef = useRef({ x: -1000, y: -1000 });
   const dimensionsRef = useRef({ width: 0, height: 0 });
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -49,15 +51,21 @@ export function FireflyBackground() {
       if (width === 0 || height === 0) return;
 
       const count = 42;
-      firefliesRef.current = Array.from({ length: count }, () => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        size: Math.random() * 3 + 2,
-        opacity: 0.225 + Math.random() * 0.15,
-        targetOpacity: 0.225 + Math.random() * 0.15,
-      }));
+      firefliesRef.current = Array.from({ length: count }, () => {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 0.15 + Math.random() * 0.1;
+        return {
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          angle,
+          speed,
+          size: Math.random() * 3 + 2,
+          opacity: 0.225 + Math.random() * 0.15,
+          targetOpacity: 0.225 + Math.random() * 0.15,
+        };
+      });
     };
 
     // Mouse tracking with document coordinates
@@ -80,33 +88,36 @@ export function FireflyBackground() {
       ctx.clearRect(0, 0, width, height);
 
       firefliesRef.current.forEach((firefly) => {
-        // Mouse repulsion physics
+        // Smooth wandering: slowly change direction over time
+        firefly.angle += (Math.random() - 0.5) * 0.05;
+
+        // Set velocity based on current wandering angle and speed
+        firefly.vx = Math.cos(firefly.angle) * firefly.speed;
+        firefly.vy = Math.sin(firefly.angle) * firefly.speed;
+
+        // Mouse repulsion: apply force to velocity (permanent deflection)
         const dx = firefly.x - mouseRef.current.x;
         const dy = firefly.y - mouseRef.current.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        const interactionRadius = 60;
+        const interactionRadius = 90;
 
         if (distance < interactionRadius && distance > 0) {
-          const force = (1 - distance / interactionRadius) * 0.4;
-          const angle = Math.atan2(dy, dx);
-          firefly.vx += Math.cos(angle) * force;
-          firefly.vy += Math.sin(angle) * force;
-        }
+          const force = (1 - distance / interactionRadius) * 0.3;
+          const repulsionAngle = Math.atan2(dy, dx);
 
-        // Random drift
-        firefly.vx += (Math.random() - 0.5) * 0.08;
-        firefly.vy += (Math.random() - 0.5) * 0.08;
+          // Apply repulsion force to velocity
+          firefly.vx += Math.cos(repulsionAngle) * force;
+          firefly.vy += Math.sin(repulsionAngle) * force;
 
-        // Friction
-        firefly.vx *= 0.97;
-        firefly.vy *= 0.97;
+          // CRITICAL: Update angle based on new velocity (permanent trajectory change)
+          firefly.angle = Math.atan2(firefly.vy, firefly.vx);
 
-        // Velocity cap
-        const maxSpeed = 2.5;
-        const speed = Math.sqrt(firefly.vx * firefly.vx + firefly.vy * firefly.vy);
-        if (speed > maxSpeed) {
-          firefly.vx = (firefly.vx / speed) * maxSpeed;
-          firefly.vy = (firefly.vy / speed) * maxSpeed;
+          // Recalculate speed to maintain consistent movement
+          const currentSpeed = Math.sqrt(firefly.vx * firefly.vx + firefly.vy * firefly.vy);
+          if (currentSpeed > 0) {
+            firefly.vx = (firefly.vx / currentSpeed) * firefly.speed;
+            firefly.vy = (firefly.vy / currentSpeed) * firefly.speed;
+          }
         }
 
         // Update position
