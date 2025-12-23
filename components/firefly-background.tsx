@@ -40,7 +40,6 @@ export function FireflyBackground() {
         canvas.width = width;
         canvas.height = height;
         dimensionsRef.current = { width, height };
-        console.log('Canvas initialized:', { width, height, fireflies: firefliesRef.current.length });
       }
     };
 
@@ -49,15 +48,15 @@ export function FireflyBackground() {
       const { width, height } = dimensionsRef.current;
       if (width === 0 || height === 0) return;
 
-      const count = 31;
+      const count = 42;
       firefliesRef.current = Array.from({ length: count }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
         size: Math.random() * 3 + 2,
-        opacity: 0.3 + Math.random() * 0.2,
-        targetOpacity: 0.3 + Math.random() * 0.2,
+        opacity: 0.225 + Math.random() * 0.15,
+        targetOpacity: 0.225 + Math.random() * 0.15,
       }));
     };
 
@@ -70,17 +69,11 @@ export function FireflyBackground() {
     };
 
     // Animation loop
-    let frameCount = 0;
     const animate = () => {
       const { width, height } = dimensionsRef.current;
       if (width === 0 || height === 0) {
         animationFrameRef.current = requestAnimationFrame(animate);
         return;
-      }
-
-      frameCount++;
-      if (frameCount === 1 || frameCount % 120 === 0) {
-        console.log('Canvas animating:', { frame: frameCount, fireflies: firefliesRef.current.length });
       }
 
       // Clear entire canvas
@@ -109,7 +102,7 @@ export function FireflyBackground() {
         firefly.vy *= 0.97;
 
         // Velocity cap
-        const maxSpeed = 4;
+        const maxSpeed = 2.5;
         const speed = Math.sqrt(firefly.vx * firefly.vx + firefly.vy * firefly.vy);
         if (speed > maxSpeed) {
           firefly.vx = (firefly.vx / speed) * maxSpeed;
@@ -128,7 +121,7 @@ export function FireflyBackground() {
 
         // Opacity animation
         if (Math.random() < 0.01) {
-          firefly.targetOpacity = 0.3 + Math.random() * 0.2;
+          firefly.targetOpacity = 0.225 + Math.random() * 0.15;
         }
         firefly.opacity += (firefly.targetOpacity - firefly.opacity) * 0.05;
 
@@ -142,11 +135,11 @@ export function FireflyBackground() {
           firefly.size * 4
         );
 
-        // TEMP: Bright red for visibility testing
-        const color = `rgba(255, 0, 0, ${firefly.opacity})`;
+        // Warm firefly glow
+        const color = `rgba(255, 210, 100, ${firefly.opacity})`;
 
         gradient.addColorStop(0, color);
-        gradient.addColorStop(1, "rgba(255, 0, 0, 0)");
+        gradient.addColorStop(1, "rgba(255, 210, 100, 0)");
 
         ctx.fillStyle = gradient;
         ctx.beginPath();
