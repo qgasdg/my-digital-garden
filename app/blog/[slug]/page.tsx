@@ -14,7 +14,7 @@ import Link from "next/link";
 import { ArticleWrapper } from "./article-wrapper";
 import { Pre } from "@/components/mdx-components";
 import { H1, H2, H3, H4, H5, H6 } from "@/components/mdx-heading-components";
-import { FireflyBackground } from "@/components/firefly-background";
+// import { FireflyBackground } from "@/components/firefly-background";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 interface PageProps {
@@ -31,12 +31,13 @@ export async function generateStaticParams() {
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: PageProps) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
   const post = getPostBySlug(slug);
 
   if (!post) {
     return {
-      title: "Post Not Found",
+      title: "글을 찾을 수 없습니다",
     };
   }
 
@@ -47,7 +48,9 @@ export async function generateMetadata({ params }: PageProps) {
 }
 
 export default async function BlogPost({ params }: PageProps) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  // Decode URL-encoded Korean characters
+  const slug = decodeURIComponent(rawSlug);
   const post = getPostBySlug(slug);
 
   if (!post) {
@@ -58,7 +61,7 @@ export default async function BlogPost({ params }: PageProps) {
     <ArticleWrapper>
       <div className="min-h-screen paper-texture relative">
         {/* Atmospheric Firefly Background */}
-        <FireflyBackground />
+        {/* <FireflyBackground /> */}
         {/* Header */}
         <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-6 py-4">
@@ -70,6 +73,9 @@ export default async function BlogPost({ params }: PageProps) {
                 <div className="flex gap-6 text-sm text-muted-foreground">
                   <Link href="/" className="hover:text-foreground transition-colors">
                     Archive
+                  </Link>
+                  <Link href="/write" className="hover:text-foreground transition-colors">
+                    Write
                   </Link>
                   <Link href="/about" className="hover:text-foreground transition-colors">
                     About
@@ -142,7 +148,7 @@ export default async function BlogPost({ params }: PageProps) {
                 href="/"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                ← Back to Archive
+                ← 목록으로 돌아가기
               </Link>
             </div>
           </footer>

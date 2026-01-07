@@ -21,7 +21,10 @@ export default function Loading() {
                 <Link href="/" className="hover:text-foreground transition-colors">
                   Archive
                 </Link>
-                <Link href="#" className="hover:text-foreground transition-colors">
+                <Link href="/write" className="hover:text-foreground transition-colors">
+                  Write
+                </Link>
+                <Link href="/about" className="hover:text-foreground transition-colors">
                   About
                 </Link>
               </div>

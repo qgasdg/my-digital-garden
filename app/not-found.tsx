@@ -56,9 +56,7 @@ export default function NotFound() {
           }}
           className="text-4xl md:text-5xl font-serif mb-6 text-foreground tracking-tight"
         >
-          This page seems to be missing
-          <br />
-          from the archive
+          페이지를 찾을 수 없습니다
         </motion.h1>
 
         {/* Description */}
@@ -71,8 +69,7 @@ export default function NotFound() {
           }}
           className="text-lg text-muted-foreground mb-10 max-w-md leading-relaxed"
         >
-          The page you're looking for doesn't exist or may have been moved.
-          Let's get you back to familiar ground.
+          요청하신 페이지가 존재하지 않거나 이동되었을 수 있습니다.
         </motion.p>
 
         {/* Action Button */}
@@ -85,7 +82,7 @@ export default function NotFound() {
           }}
         >
           <Button asChild size="lg" className="font-medium">
-            <Link href="/">Return Home</Link>
+            <Link href="/">홈으로 돌아가기</Link>
           </Button>
         </motion.div>
       </motion.div>

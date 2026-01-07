@@ -8,7 +8,7 @@ const postsDirectory = path.join(process.cwd(), "posts");
  * Convert a filename to a URL-safe slug
  * Example: "KL, JS Divergence.mdx" → "kl-js-divergence"
  */
-function filenameToSlug(filename: string): string {
+export function filenameToSlug(filename: string): string {
   return filename
     .replace(/\.(mdx|md)$/, "") // Remove extension
     .toLowerCase() // Convert to lowercase

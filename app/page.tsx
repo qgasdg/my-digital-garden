@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getAllPostsMetadata, formatDate } from "@/lib/mdx";
 import { Badge } from "@/components/ui/badge";
-import { FireflyBackground } from "@/components/firefly-background";
+// import { FireflyBackground } from "@/components/firefly-background";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Home() {
@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <div className="min-h-screen paper-texture relative">
       {/* Atmospheric Firefly Background */}
-      <FireflyBackground />
+      {/* <FireflyBackground /> */}
       {/* Header / Navigation */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -23,6 +23,9 @@ export default function Home() {
               <div className="flex gap-6 text-sm text-muted-foreground">
                 <Link href="/" className="hover:text-foreground transition-colors">
                   Archive
+                </Link>
+                <Link href="/write" className="hover:text-foreground transition-colors">
+                  Write
                 </Link>
                 <Link href="/about" className="hover:text-foreground transition-colors">
                   About
@@ -38,13 +41,10 @@ export default function Home() {
       <section className="max-w-4xl mx-auto px-6 py-24 relative z-10">
         <div className="space-y-6">
           <h2 className="text-6xl font-serif leading-tight tracking-tight">
-            A Modern Editorial
-            <br />
-            Archive
+            생각의 정원
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed">
-            Documenting my journey through Computer Science, Artificial Intelligence,
-            and Software Engineering. Clean, focused, and entirely about the content.
+          <p className="text-xl text-muted-foreground max-w-[773px] leading-relaxed">
+            인공지능을 공부하며 세상에 대해 기록합니다
           </p>
         </div>
       </section>
@@ -65,39 +65,7 @@ export default function Home() {
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-accent/10 via-accent/5 to-background relative">
-                        {/* Decorative Pattern */}
-                        <div className="absolute inset-0 opacity-[0.03]">
-                          <div className="absolute top-4 left-4 w-24 h-24 rounded-full border-2 border-accent"></div>
-                          <div className="absolute bottom-4 right-4 w-32 h-32 rounded-full border-2 border-accent"></div>
-                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full border-2 border-accent"></div>
-                        </div>
-
-                        {/* Main Icon */}
-                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="56"
-                            height="56"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="text-accent/30"
-                          >
-                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                            <polyline points="14 2 14 8 20 8" />
-                            <line x1="16" x2="8" y1="13" y2="13" />
-                            <line x1="16" x2="8" y1="17" y2="17" />
-                            <line x1="10" x2="8" y1="9" y2="9" />
-                          </svg>
-                          <div className="text-xs font-serif text-accent/40 tracking-wide">
-                            {post.tags[0] || "Archive"}
-                          </div>
-                        </div>
-                      </div>
+                      <div className="w-full h-full bg-muted/50" />
                     )}
                   </div>
                   <div className="p-6 space-y-3 flex-1 flex flex-col">
@@ -129,7 +97,7 @@ export default function Home() {
       <footer className="border-t border-border mt-32">
         <div className="max-w-7xl mx-auto px-6 py-12">
           <p className="text-sm text-muted-foreground text-center">
-            Built with Next.js, Tailwind CSS, and care.
+            Next.js와 Tailwind CSS로 만들었습니다.
           </p>
         </div>
       </footer>

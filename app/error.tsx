@@ -67,9 +67,7 @@ export default function Error({ error, reset }: ErrorProps) {
           }}
           className="text-4xl md:text-5xl font-serif mb-6 text-foreground tracking-tight"
         >
-          Something went wrong,
-          <br />
-          but it's not your fault
+          문제가 발생했습니다
         </motion.h1>
 
         {/* Description */}
@@ -82,8 +80,7 @@ export default function Error({ error, reset }: ErrorProps) {
           }}
           className="text-lg text-muted-foreground mb-10 max-w-md leading-relaxed"
         >
-          An unexpected error occurred while loading this page.
-          You can try again, or return home to continue exploring.
+          페이지를 불러오는 중 오류가 발생했습니다. 다시 시도해 주세요.
         </motion.p>
 
         {/* Action Buttons */}
@@ -97,10 +94,10 @@ export default function Error({ error, reset }: ErrorProps) {
           className="flex flex-col sm:flex-row gap-4"
         >
           <Button onClick={reset} size="lg" variant="default" className="font-medium">
-            Try Again
+            다시 시도
           </Button>
           <Button asChild size="lg" variant="outline" className="font-medium">
-            <Link href="/">Return Home</Link>
+            <Link href="/">홈으로 돌아가기</Link>
           </Button>
         </motion.div>
 
@@ -116,7 +113,7 @@ export default function Error({ error, reset }: ErrorProps) {
             className="mt-12 text-left w-full max-w-lg"
           >
             <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground transition-colors mb-2">
-              Error Details (Development Mode)
+              오류 상세 (개발 모드)
             </summary>
             <pre className="text-xs bg-muted/50 p-4 rounded-lg overflow-auto max-h-48 text-muted-foreground border border-border">
               {error.message}
