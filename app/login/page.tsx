@@ -22,10 +22,12 @@ function LoginForm() {
     const res = await signIn("credentials", {
       password,
       redirect: false,
+      callbackUrl,
     });
 
     if (res?.ok) {
       router.push(callbackUrl);
+      router.refresh();
     } else {
       setError("비밀번호가 올바르지 않습니다.");
       setLoading(false);
