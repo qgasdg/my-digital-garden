@@ -10,4 +10,4 @@ export default auth((req) => {
   }
 });
 
-export const config = { matcher: ["/write/:path*"] };
+export const config = { matcher: ["/write", "/write/:path*"] };
