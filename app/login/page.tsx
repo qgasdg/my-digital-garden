@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { loginAction } from "./actions";
 
 function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/write";
 
@@ -19,17 +18,9 @@ function LoginForm() {
     setLoading(true);
     setError("");
 
-    const res = await signIn("credentials", {
-      password,
-      redirect: false,
-      callbackUrl,
-    });
-
-    if (res?.ok) {
-      router.push(callbackUrl);
-      router.refresh();
-    } else {
-      setError("비밀번호가 올바르지 않습니다.");
+    const result = await loginAction(password, callbackUrl);
+    if (result?.error) {
+      setError(result.error);
       setLoading(false);
     }
   };
